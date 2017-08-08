@@ -42,11 +42,17 @@ mytheme <- gg.theme("clean")
 
 ```{r}
 # Equal sized windows
-stepsize = 0.0025
-winsize = 0.005
-origP = RPPdata$T.pval.USE.O
-replicP = RPPdata$T.pval.USE.R
-startwins = seq(0,0.05-stepsize,by=stepsize)
+stepsize = 0.005
+winsize = 0.01
+raw_origP = RPPdata$T.pval.USE.O
+length(raw_origP)
+raw_replicP = RPPdata$T.pval.USE.R
+#length(origP)
+id = which(raw_origP < 0.06)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+length(origP)
+startwins = seq(0,0.06-stepsize,by=stepsize)
 winProps <- 0
 i=0
 for (startw in startwins){
@@ -61,7 +67,7 @@ for (startw in startwins){
 eqwin_df = data.frame(startwins, winProps)
 
 
-pdf("/Users/vishnusreekumar/Dropbox/PostdocAnalysis/Alpha005/Figs/propReplicated_eqwin005_step0025.pdf")
+#pdf("/Users/vishnusreekumar/Dropbox/PostdocAnalysis/Alpha005/Figs/propReplicated_eqwin005_step0025.pdf")
 
 ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_line()+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.06)) + 
@@ -70,59 +76,22 @@ ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[9]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
   mytheme
-dev.off()
+#dev.off()
 ```
 
 ```{r}
-### Calculate proportion of studies replicated in moving windows over original study p-values. ###
-### Take window of size winsize, calculate proportion of studies replicated within that window.###
-### Move window ahead by stepsize. Plot proportion against starting positions of these windows ###
-
-## Download toolboxR: https://github.com/FredHasselman/toolboxR
-## Original analysis code to make figures: https://osf.io/tfbe8/
-
-# Use this code (from the devtools package) to source C-3PR directly from GitHub:
-require(devtools)
-#install.packages('devtools')
-#install.packages('RCurl')
-library(devtools)
-source_url('https://raw.githubusercontent.com/FredHasselman/toolboxR/master/C-3PR.R')
-
-# This will load and (if necessary) install libraries frequently used for data management and plotting
-in.IT(c('ggplot2','RColorBrewer','lattice','gridExtra','plyr','dplyr','httr'))
-
-# Read the data from the OSF storage
-# Note: get.OSFfile() returns a list with the .csv data (df) and information (info) containing the URL download timestamp and original column and rownames (these names will be changed if dfCln=TRUE).  
-RPPdata <- get.OSFfile(code='https://osf.io/fgjvw/',dfCln=T)$df
-
-## If you dowloaded the csv file to your harddrive use this code:
-#  RPPdata<-read.csv('rpp_data.csv',stringsAsFactors=F )
-#  RPPdata<-df.Clean(RPPdata)
-#  RPPdata<-RPPdata$df
-
-# Select the completed replication studies
-RPPdata <- dplyr::filter(RPPdata, !is.na(T.pval.USE.O),!is.na(T.pval.USE.R))
-# We have 99 studies for which p-values and effect sizes could be calculated
-nrow(RPPdata)
-# We have 97 studies for which p-values of the original effect were significantly below .05
-idOK <- complete.cases(RPPdata$T.r.O,RPPdata$T.r.R)
-sum(idOK)
-
-# Get ggplot2 themes predefined in C-3PR
-mytheme <- gg.theme("clean")
-
-
-
-###########################
-## V.Sreekumar modified: ##
-###########################
-
-# Equal sized windows
-stepsize = 0.0025
-winsize = 0.005
-origP = RPPdata$T.pval.USE.O
-replicP = RPPdata$T.pval.USE.R
-startwins = seq(0,0.05-stepsize,by=stepsize)
+# Sampe size - matched windows
+stepsize = 0.005
+winsize = 0.01
+raw_origP = RPPdata$T.pval.USE.O
+length(raw_origP)
+raw_replicP = RPPdata$T.pval.USE.R
+#length(origP)
+id = which(raw_origP < 0.06)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+length(origP)
+startwins = seq(0,0.06-stepsize,by=stepsize)
 winProps <- 0
 i=0
 for (startw in startwins){
@@ -137,7 +106,7 @@ for (startw in startwins){
 eqwin_df = data.frame(startwins, winProps)
 
 
-pdf("propReplicated_eqwin005_step0025.pdf")
+#pdf("/Users/vishnusreekumar/Dropbox/PostdocAnalysis/Alpha005/Figs/propReplicated_eqwin005_step0025.pdf")
 
 ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_line()+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.06)) + 
@@ -146,8 +115,55 @@ ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[9]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
   mytheme
-dev.off()
+#dev.off()
 ```
+
+```{r}
+# Spearman's correlation between original and replication p-values
+library(Hmisc)
+#install.packages('Hmisc')
+pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
+df = data.frame(origP,replicP)
+#df
+rcorr(pmat, type="pearson")
+raw_df = data.frame(raw_origP,raw_replicP)
+raw_pmat = matrix(c(raw_origP,raw_replicP),nrow=length(raw_origP),ncol=2)
+rcorr(raw_pmat, type="spearman")
+
+ggplot(df, aes(x=origP, y=replicP)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm) +   # Add linear regression line 
+                             #  (by default includes 95% confidence region)
+    scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
+
+```
+```{r}
+# Checking veracity of statement: "26 of 63 (41%) original studies
+# with P < 0.02 achieved P < 0.05 in the replication"
+ids = which(origP<0.02)
+length(ids)
+repP = replicP[ids]
+length(which(repP<0.05))
+# my ans: 26/64
+
+# Checking veracity of statement: "6 of 23 (26%) that had a P value between 0.02 < P < 0.04 achieved P < 0.05 in the replication"
+ids = which(origP<0.04 & origP>0.02)
+length(ids)
+repP = replicP[ids]
+length(which(repP<0.05))
+# my ans: 7/23
+
+# Checking veracity of statement: "2 of 11 (18%) that had
+# a P value > 0.04  achieved P < 0.05 in the replication"
+ids = which(origP>0.04)
+length(ids)
+repP = replicP[ids]
+length(which(repP<0.05))
+# my ans: 1/5 if not considering original p > 0.05 and 1/9 if considering 0.05 < p < 0.06
+
+
+```
+
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
 
