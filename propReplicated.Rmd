@@ -82,7 +82,7 @@ ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
 ```{r}
 # Sampe size - matched windows
 stepsize = 0.005
-winsize = 0.01
+sampSize = 20 # use windows with 20 samples
 raw_origP = RPPdata$T.pval.USE.O
 length(raw_origP)
 raw_replicP = RPPdata$T.pval.USE.R
@@ -94,9 +94,18 @@ length(origP)
 startwins = seq(0,0.06-stepsize,by=stepsize)
 winProps <- 0
 i=0
+
+sortedOrigPInd = sort(origP,index.return = TRUE)
+sortedOrigP = sortedOrigPInd$x
+sortedInds = sortedOrigPInd$ix
+sortedReplicP = replicP[sortedInds]
 for (startw in startwins){
   i=i+1
-  endw = startw + winsize
+  # in the sorted origP, start closest to this position, and get origP value sampSize positions from the current position
+  # that is the end point of the window
+  ind = which.min(abs(sortedOrigP - startw)) 
+  endw = sortedOrigP[ind+sampSize]
+  
   inds = origP>=startw & origP<endw
   origPs = origP[inds]
   replicPs = replicP[inds]
