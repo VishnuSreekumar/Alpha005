@@ -67,7 +67,7 @@ for (startw in startwins){
 eqwin_df = data.frame(startwins, winProps)
 
 
-#pdf("/Users/vishnusreekumar/Dropbox/PostdocAnalysis/Alpha005/Figs/propReplicated_eqwin005_step0025.pdf")
+pdf("propReplicated_eqwin01_step005.pdf")
 
 ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_line()+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.06)) + 
@@ -76,7 +76,7 @@ ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[9]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
   mytheme
-#dev.off()
+dev.off()
 ```
 
 ```{r}
@@ -115,7 +115,7 @@ for (startw in startwins){
 eqwin_df = data.frame(startwins, winProps)
 
 
-#pdf("/Users/vishnusreekumar/Dropbox/PostdocAnalysis/Alpha005/Figs/propReplicated_eqwin005_step0025.pdf")
+pdf("propReplicated_sizematchedwin_N20_step005.pdf")
 
 ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_line()+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.06)) + 
@@ -124,7 +124,7 @@ ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[9]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
   mytheme
-#dev.off()
+dev.off()
 ```
 
 ```{r}
