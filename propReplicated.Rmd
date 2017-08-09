@@ -243,7 +243,7 @@ ggplot(df, aes(x=origP, y=replicP)) +
 id = which(raw_origP> 0.0001 & raw_origP <= 0.001)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
-sum(replicP<0.005)/length(origP) 
+sum(replicP<0.05)/length(origP) 
 
 # Scatter
 ggplot(df, aes(x=origP, y=replicP)) +
@@ -254,6 +254,12 @@ ggplot(df, aes(x=origP, y=replicP)) +
     geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
     geom_hline(aes(yintercept=0.05),linetype=2,color=mypalette[9]) + 
     mytheme
+
+# Proportion studies replicated when original p value <= 0.0001
+id = which(raw_origP <= 0.0001)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+sum(replicP<0.05)/length(origP) 
 ```
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
