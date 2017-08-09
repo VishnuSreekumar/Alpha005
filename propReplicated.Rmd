@@ -82,7 +82,7 @@ dev.off()
 ```{r}
 # Sampe size - matched windows
 stepsize = 0.005
-sampSize = 20 # use windows with 20 samples
+sampSize = 10 # use windows with 20 samples
 raw_origP = RPPdata$T.pval.USE.O
 length(raw_origP)
 raw_replicP = RPPdata$T.pval.USE.R
@@ -174,6 +174,86 @@ length(which(repP<0.05))
 ```
 
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+```{r}
+# The appropriate control analysis is to look at p<0.005 and determine how many replicated at p<0.005
+# This controls for boundary effects near the threshold (because obviously, there is a distribution of expected p values around the original p value assuming that there is a correlation (which there does seem to be, see Table 2, Science paper)).
+# Also looked at proportion of studies replicated when original p value was between 0.0001 and 0.001. 50% at best (alpha = 0.05) replicated.
+
+# Equal sized windows
+stepsize = 0.001
+winsize = 0.001
+raw_origP = RPPdata$T.pval.USE.O
+length(raw_origP)
+raw_replicP = RPPdata$T.pval.USE.R
+#length(origP)
+minP = 0.0001
+maxP = 0.006
+id = which(raw_origP> minP & raw_origP < maxP)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+length(origP)
+startwins = seq(minP,maxP-stepsize,by=stepsize)
+winProps <- 0
+i=0
+for (startw in startwins){
+  i=i+1
+  endw = startw + winsize
+  inds = origP>=startw & origP<endw
+  origPs = origP[inds]
+  replicPs = replicP[inds]
+  winProps[i] = sum(replicPs<0.005)/length(replicPs)
+}
+
+eqwin_df = data.frame(startwins, winProps)
+
+
+pdf("propReplicatedat005_eqwin001_step0005.pdf")
+
+ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
+  geom_line()+scale_x_continuous(breaks=c(0,.0001,.005),limits=c(0,.006)) + 
+  ggtitle("") + xlab("Original Study p-value") + ylab("Proportion of studies replicated") + 
+  ylim(c(0,1)) + 
+  geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
+  geom_vline(aes(xintercept=0.001),linetype=2,color=mypalette[9]) + 
+  mytheme
+dev.off()
+
+
+#Scatter
+pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
+df = data.frame(origP,replicP)
+#df
+rcorr(pmat, type="spearman")
+raw_df = data.frame(raw_origP,raw_replicP)
+raw_pmat = matrix(c(raw_origP,raw_replicP),nrow=length(raw_origP),ncol=2)
+rcorr(raw_pmat, type="spearman")
+
+ggplot(df, aes(x=origP, y=replicP)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm) +   # Add linear regression line 
+                             #  (by default includes 95% confidence region)
+    scale_x_continuous(breaks=c(minP,.001,maxP),limits=c(minP,maxP)) +
+    geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
+    geom_hline(aes(yintercept=0.005),linetype=2,color=mypalette[9]) + 
+    mytheme
+
+
+# Proportion studies replicated in original p value band 0.0001 to 0.001
+id = which(raw_origP> 0.0001 & raw_origP <= 0.001)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+sum(replicP<0.005)/length(origP) 
+
+# Scatter
+ggplot(df, aes(x=origP, y=replicP)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm) +   # Add linear regression line 
+                             #  (by default includes 95% confidence region)
+    scale_x_continuous(breaks=c(minP,.001,0.001),limits=c(minP,0.001)) +
+    geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[9]) + 
+    geom_hline(aes(yintercept=0.05),linetype=2,color=mypalette[9]) + 
+    mytheme
+```
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
