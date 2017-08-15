@@ -50,21 +50,43 @@ raw_origP = RPPdata$T.pval.USE.O
 length(raw_origP)
 raw_replicP = RPPdata$T.pval.USE.R
 
-
 # Proportion studies replicated when original p value <= 0.005
 id = which(raw_origP <= 0.005)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 1-sum(replicP<0.005)/length(origP) # failure rate at alpha .005
 1-sum(replicP<0.05)/length(origP) # failure rate at alpha .05
-
+X1 = sum(replicP<0.05)
+N1 = length(origP)
+X3 = sum(replicP<0.005)
+N3 = length(origP)
 # Proportion studies replicated in original p value band 0.005 to 0.05
 id = which(raw_origP> 0.005 & raw_origP <= 0.05)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 1-sum(replicP<0.05)/length(origP) # failure rate at alpha .05
+1-sum(replicP<0.005)/length(origP) # failure rate at alpha .05
+X2 = sum(replicP<0.05)
+N2 = length(origP)
+X4 = sum(replicP<0.005)
+N4 = length(origP)
+
+# Calculate binomial confidence intervals
+#install.packages('prevalence')
+#install.packages('rjags')
+# You will need to install JAGS. Here are the files for MacOS: https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/
+library(rjags)
+library(prevalence)
+
+# Test if proportion replicated (at alpha = .05) are different for original p<=.005 vs .005<orig_p<=.05.
+props <- propCI(x = c(X1,X2), n = c(N1,N2)) 
+jeffCIs = props[props$method=='jeffreys',c('lower','upper')]
+library(MASS)
+prop.test(c(X1,X2), c(N1,N2), correct=FALSE) 
 
 
+# Test if proportion replicated are different for original p<=.005 (replication success defined at alpha = .005) vs .005<orig_p<=.05 (replication success defined at alpha = .05).
+prop.test(c(X3,X2), c(N3,N2), correct=FALSE) 
 
 #length(origP)
 id = which(raw_origP < 0.06)
@@ -85,14 +107,11 @@ for (startw in startwins){
   Nsamp[i] = length(replicPs)
 }
 
-# Calculate binomial confidence intervals
-#install.packages('prevalence')
-#install.packages('rjags')
-# You will need to install JAGS. Here are the files for MacOS: https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/
-library(rjags)
-library(prevalence)
+
 props <- propCI(x = winProps*Nsamp, n = Nsamp) 
 jeffCIs = props[props$method=='jeffreys',c('lower','upper')]
+
+
 
 eqwin_df = data.frame(startwins, winProps, Nsamp, jeffCIs)
 colnames(eqwin_df)[1] <- 'window start'
