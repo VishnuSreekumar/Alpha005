@@ -104,28 +104,30 @@ colnames(eqwin_df)[3] <- 'sample size'
 pdf("propReplicated_eqwin01_step005.pdf",height=4,width=6)
 
 g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
-  geom_line(size=1)+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.05)) + 
+  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.05)) + 
   ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
-  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.2, size = .5) +
+  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
   scale_fill_discrete(name="sample size") + mytheme
 g + guides(color = F) + scale_size(name="sample size") +
-  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12)
+  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
+           panel.grid.major.x=element_blank())
 dev.off()
 
 
 png("propReplicated_eqwin01_step005.png",height=4,width=6,units = "in",res=300)
 
 g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
-  geom_line(size=1)+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.05)) + 
+  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,.05)) + 
   ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
-  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.2, size = .5) +
+  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
   scale_fill_discrete(name="sample size") + mytheme
 g + guides(color = F) + scale_size(name="sample size") +
-  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12)
+  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
+           panel.grid.major.x=element_blank())
 dev.off()
 ```
 
