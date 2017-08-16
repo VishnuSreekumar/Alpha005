@@ -163,9 +163,8 @@ colnames(eqwin_df)[1] <- 'window start'
 colnames(eqwin_df)[2] <- 'proportion replicated'
 colnames(eqwin_df)[3] <- 'sample size'
 
-
-
-pdf("propReplicated_eqwin01_step005.pdf",height=4,width=6)
+## THIS IS NOT USED, SEE NEXT CHUNK FOR THE FIGURE USED IN THE PAPER ##
+pdf("Figures/propReplicated_eqwin01_step005.pdf",height=4,width=6)
 
 g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
   geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
@@ -180,7 +179,7 @@ g + guides(color = F) + scale_size(name="sample size") +
 dev.off()
 
 
-png("propReplicated_eqwin01_step005.png",height=4,width=6,units = "in",res=300)
+png("Figures/propReplicated_eqwin01_step005.png",height=4,width=6,units = "in",res=300)
 
 g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
   geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
@@ -254,7 +253,7 @@ colnames(eqwin_df)[3] <- 'sample size'
 
 
 
-pdf("Fig2_propReplicated_eqwin005_step005.pdf",height=4,width=6)
+pdf("Figures/Fig2_propReplicated_eqwin005_step005.pdf",height=4,width=6)
 
 g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
   geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
@@ -269,7 +268,7 @@ g + guides(color = F) + scale_size(name="sample size") +
 dev.off()
 
 
-png("Fig2_propReplicated_eqwin005_step005.png",height=4,width=6,units = "in",res=300)
+png("Figures/Fig2_propReplicated_eqwin005_step005.png",height=4,width=6,units = "in",res=300)
 
 g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
   geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
