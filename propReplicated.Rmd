@@ -42,10 +42,8 @@ mypalette        <- brewer.pal(9,"YlOrRd")
 ```
 
 ```{r}
-# Equal sized windows
-currentpalette        <- brewer.pal(8,"Greys")
-stepsize = 0.005
-winsize = 0.01
+## CALCULATING PROPORTION REPLICATED IN DIFFERENT P-VALUE WINDOWS
+
 raw_origP = RPPdata$T.pval.USE.O
 length(raw_origP)
 raw_replicP = RPPdata$T.pval.USE.R
@@ -60,6 +58,7 @@ X1 = sum(replicP<0.05)
 N1 = length(origP)
 X2 = sum(replicP<0.005)
 N2 = length(origP)
+
 # Proportion studies replicated in original p value band 0.005 to 0.05
 id = which(raw_origP> 0.005 & raw_origP <= 0.05)
 origP = raw_origP[id]
@@ -81,10 +80,6 @@ X5 = sum(replicP<0.05)
 N5 = length(origP)
 X6 = sum(replicP<0.005)
 N6 = length(origP)
-X5
-N5
-X6
-N6
 
 # Proportion studies replicated in original p value band 0.0001 to 0.005
 id = which(raw_origP>= 0.0001 & raw_origP < 0.005)
@@ -96,10 +91,7 @@ X7 = sum(replicP<0.05)
 N7 = length(origP)
 X8 = sum(replicP<0.005)
 N8 = length(origP)
-X7
-N7
-X8
-N8
+
 
 # Proportion studies replicated for original p < .0001
 id = which(raw_origP< 0.0001)
@@ -111,10 +103,6 @@ X9 = sum(replicP<0.05)
 N9 = length(origP)
 X10 = sum(replicP<0.005)
 N10 = length(origP)
-X9
-N9
-X10
-N10
 
 # Calculate binomial confidence intervals
 #install.packages('prevalence')
@@ -133,68 +121,12 @@ prop.test(c(X1,X3), c(N1,N3), correct=FALSE)
 # Test if proportion replicated are different for original p<=.005 (replication success defined at alpha = .005) vs .005<orig_p<=.05 (replication success defined at alpha = .05).
 prop.test(c(X2,X3), c(N2,N3), correct=FALSE) 
 
-#length(origP)
-id = which(raw_origP < 0.06)
-origP = raw_origP[id]
-replicP = raw_replicP[id]
-length(origP)
-startwins = seq(0,0.06-winsize,by=stepsize)
-winProps <- 0
-Nsamp  <- 0
-i=0
-for (startw in startwins){
-  i=i+1
-  endw = startw + winsize
-  inds = origP>=startw & origP<endw
-  origPs = origP[inds]
-  replicPs = replicP[inds]
-  winProps[i] = sum(replicPs<0.05)/length(replicPs)
-  Nsamp[i] = length(replicPs)
-}
 
-
-props <- propCI(x = winProps*Nsamp, n = Nsamp) 
-jeffCIs = props[props$method=='jeffreys',c('lower','upper')]
-
-
-
-eqwin_df = data.frame(startwins, winProps, Nsamp, jeffCIs)
-colnames(eqwin_df)[1] <- 'window start'
-colnames(eqwin_df)[2] <- 'proportion replicated'
-colnames(eqwin_df)[3] <- 'sample size'
-
-## THIS IS NOT USED, SEE NEXT CHUNK FOR THE FIGURE USED IN THE PAPER ##
-pdf("Figures/propReplicated_eqwin01_step005.pdf",height=4,width=6)
-
-g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
-  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
-  ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
-  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
-  geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
-  geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
-  scale_fill_discrete(name="sample size") + mytheme
-g + guides(color = F) + scale_size(name="sample size") +
-  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
-           panel.grid.major.x=element_blank())
-dev.off()
-
-
-png("Figures/propReplicated_eqwin01_step005.png",height=4,width=6,units = "in",res=300)
-
-g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
-  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
-  ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
-  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
-  geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
-  geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
-  scale_fill_discrete(name="sample size") + mytheme
-g + guides(color = F) + scale_size(name="sample size") +
-  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
-           panel.grid.major.x=element_blank())
-dev.off()
 ```
 
 ```{r}
+## FOR FIGURE 1
+
 # Equal sized windows
 currentpalette        <- brewer.pal(8,"Greys")
 stepsize = 0.005
@@ -293,11 +225,11 @@ raw_origP = RPPdata$T.pval.USE.O
 length(raw_origP)
 raw_replicP = RPPdata$T.pval.USE.R
 #length(origP)
-id = which(raw_origP < 0.006)
+id = which(raw_origP < 0.005)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 length(origP)
-startwins = seq(0,0.006-stepsize,by=stepsize)
+startwins = seq(0,0.005-stepsize,by=stepsize)
 winProps <- 0
 Nsamp  <- 0
 i=0
@@ -320,7 +252,7 @@ colnames(eqwin_df)[3] <- 'sample size'
 pdf("propReplicated_eqwin001_step0005.pdf")
 
 g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
-  geom_line()+scale_x_continuous(breaks=c(0,.001,.005),limits=c(0,.006)) + 
+  geom_line()+scale_x_continuous(breaks=c(0,.001,.005),limits=c(0,.005)) + 
   ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
   ylim(c(0,1)) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
@@ -332,6 +264,72 @@ dev.off()
 
 winProps*Nsamp
 Nsamp
+```
+
+```{r}
+## PREVIOUS VERSION OF FIGURE 1, UNUSED
+# Equal sized windows
+currentpalette        <- brewer.pal(8,"Greys")
+stepsize = 0.005
+winsize = 0.01
+#length(origP)
+id = which(raw_origP < 0.06)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+length(origP)
+startwins = seq(0,0.06-winsize,by=stepsize)
+winProps <- 0
+Nsamp  <- 0
+i=0
+for (startw in startwins){
+  i=i+1
+  endw = startw + winsize
+  inds = origP>=startw & origP<endw
+  origPs = origP[inds]
+  replicPs = replicP[inds]
+  winProps[i] = sum(replicPs<0.05)/length(replicPs)
+  Nsamp[i] = length(replicPs)
+}
+
+
+props <- propCI(x = winProps*Nsamp, n = Nsamp) 
+jeffCIs = props[props$method=='jeffreys',c('lower','upper')]
+
+
+
+eqwin_df = data.frame(startwins, winProps, Nsamp, jeffCIs)
+colnames(eqwin_df)[1] <- 'window start'
+colnames(eqwin_df)[2] <- 'proportion replicated'
+colnames(eqwin_df)[3] <- 'sample size'
+## THIS IS NOT USED ##
+pdf("Figures/propReplicated_eqwin01_step005.pdf",height=4,width=6)
+
+g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
+  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
+  ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
+  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
+  geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
+  geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
+  scale_fill_discrete(name="sample size") + mytheme
+g + guides(color = F) + scale_size(name="sample size") +
+  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
+           panel.grid.major.x=element_blank())
+dev.off()
+
+
+png("Figures/propReplicated_eqwin01_step005.png",height=4,width=6,units = "in",res=300)
+
+g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
+  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
+  ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
+  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
+  geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
+  geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
+  scale_fill_discrete(name="sample size") + mytheme
+g + guides(color = F) + scale_size(name="sample size") +
+  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
+           panel.grid.major.x=element_blank())
+dev.off()
 ```
 
 ```{r}
@@ -384,15 +382,25 @@ dev.off()
 
 ```{r}
 # Spearman's correlation between original and replication p-values
+raw_origP = RPPdata$T.pval.USE.O
+length(raw_origP)
+raw_replicP = RPPdata$T.pval.USE.R
+#length(origP)
+id = which(raw_origP < 0.05)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+
+
 library(Hmisc)
 #install.packages('Hmisc')
 pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
 df = data.frame(origP,replicP)
 #df
-rcorr(pmat, type="pearson")
+rcorr(pmat, type="spearman")
 raw_df = data.frame(raw_origP,raw_replicP)
 raw_pmat = matrix(c(raw_origP,raw_replicP),nrow=length(raw_origP),ncol=2)
 rcorr(raw_pmat, type="spearman")
+rcorr(raw_pmat, type="pearson")
 
 ggplot(df, aes(x=origP, y=replicP)) +
     geom_point(shape=1) +    # Use hollow circles
