@@ -216,6 +216,55 @@ dev.off()
 ```
 
 ```{r}
+# Spearman's correlation between original and replication p-values
+raw_origP = RPPdata$T.pval.USE.O
+length(raw_origP)
+raw_replicP = RPPdata$T.pval.USE.R
+#length(origP)
+id = which(raw_origP < 0.05)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+
+
+library(Hmisc)
+#install.packages('Hmisc')
+pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
+df = data.frame(origP,replicP)
+#df
+rcorr(pmat, type="spearman")
+raw_df = data.frame(raw_origP,raw_replicP)
+raw_pmat = matrix(c(raw_origP,raw_replicP),nrow=length(raw_origP),ncol=2)
+rcorr(raw_pmat, type="spearman")
+rcorr(raw_pmat, type="pearson")
+
+ggplot(df, aes(x=origP, y=replicP)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm) +   # Add linear regression line 
+                             #  (by default includes 95% confidence region)
+    scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
+
+
+# Spearman's correlation excluding p<.0001 (as I suspect those may be driving most of the observed correlation of .3 above)
+raw_origP = RPPdata$T.pval.USE.O
+raw_replicP = RPPdata$T.pval.USE.R
+#length(origP)
+id = which(raw_origP > .0001 & raw_origP < 0.05)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+
+pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
+df = data.frame(origP,replicP)
+#df
+rcorr(pmat, type="spearman")
+
+ggplot(df, aes(x=origP, y=replicP)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm) +   # Add linear regression line 
+                             #  (by default includes 95% confidence region)
+    scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
+```
+
+```{r}
 ## Alpha 0.005, original studies with p<0.005
 # Equal sized windows
 currentpalette        <- brewer.pal(8,"Greys")
@@ -380,55 +429,7 @@ ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point() +
 dev.off()
 ```
 
-```{r}
-# Spearman's correlation between original and replication p-values
-raw_origP = RPPdata$T.pval.USE.O
-length(raw_origP)
-raw_replicP = RPPdata$T.pval.USE.R
-#length(origP)
-id = which(raw_origP < 0.05)
-origP = raw_origP[id]
-replicP = raw_replicP[id]
 
-
-library(Hmisc)
-#install.packages('Hmisc')
-pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
-df = data.frame(origP,replicP)
-#df
-rcorr(pmat, type="spearman")
-raw_df = data.frame(raw_origP,raw_replicP)
-raw_pmat = matrix(c(raw_origP,raw_replicP),nrow=length(raw_origP),ncol=2)
-rcorr(raw_pmat, type="spearman")
-rcorr(raw_pmat, type="pearson")
-
-ggplot(df, aes(x=origP, y=replicP)) +
-    geom_point(shape=1) +    # Use hollow circles
-    geom_smooth(method=lm) +   # Add linear regression line 
-                             #  (by default includes 95% confidence region)
-    scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
-
-
-# Spearman's correlation excluding p<.0001 (as I suspect those may be driving most of the observed correlation of .3 above)
-raw_origP = RPPdata$T.pval.USE.O
-raw_replicP = RPPdata$T.pval.USE.R
-#length(origP)
-id = which(raw_origP > .0001 & raw_origP < 0.05)
-origP = raw_origP[id]
-replicP = raw_replicP[id]
-
-pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
-df = data.frame(origP,replicP)
-#df
-rcorr(pmat, type="spearman")
-
-ggplot(df, aes(x=origP, y=replicP)) +
-    geom_point(shape=1) +    # Use hollow circles
-    geom_smooth(method=lm) +   # Add linear regression line 
-                             #  (by default includes 95% confidence region)
-    scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
-
-```
 ```{r}
 # Checking veracity of statement: "26 of 63 (41%) original studies
 # with P < 0.02 achieved P < 0.05 in the replication"
