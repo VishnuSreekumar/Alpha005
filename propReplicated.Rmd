@@ -408,6 +408,26 @@ ggplot(df, aes(x=origP, y=replicP)) +
                              #  (by default includes 95% confidence region)
     scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
 
+
+# Spearman's correlation excluding p<.0001 (as I suspect those may be driving most of the observed correlation of .3 above)
+raw_origP = RPPdata$T.pval.USE.O
+raw_replicP = RPPdata$T.pval.USE.R
+#length(origP)
+id = which(raw_origP > .0001 & raw_origP < 0.05)
+origP = raw_origP[id]
+replicP = raw_replicP[id]
+
+pmat = matrix(c(origP,replicP),nrow=length(origP),ncol=2)
+df = data.frame(origP,replicP)
+#df
+rcorr(pmat, type="spearman")
+
+ggplot(df, aes(x=origP, y=replicP)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm) +   # Add linear regression line 
+                             #  (by default includes 95% confidence region)
+    scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
+
 ```
 ```{r}
 # Checking veracity of statement: "26 of 63 (41%) original studies
