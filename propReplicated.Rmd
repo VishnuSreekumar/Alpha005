@@ -187,10 +187,9 @@ colnames(eqwin_df)[3] <- 'sample size'
 
 pdf("Figures/Fig2_propReplicated_eqwin005_step005.pdf",height=4,width=6)
 
-g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
-  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
+g <- ggplot(eqwin_df,aes(x=startwins+0.0025,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6]) +scale_x_continuous(breaks=c(0,.005,.01,.015,.02,.025,.03,.035,.04,.045,.05),limits=c(0,.05)) + 
   ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
-  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
+  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8,alpha=0.5) +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
   scale_fill_discrete(name="sample size") + mytheme
@@ -199,13 +198,13 @@ g + guides(color = F) + scale_size(name="sample size") +
            panel.grid.major.x=element_blank())
 dev.off()
 
+#geom_line(size=1,alpha=0.5)
 
 png("Figures/Fig2_propReplicated_eqwin005_step005.png",height=4,width=6,units = "in",res=300)
 
-g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
-  geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
+g <- ggplot(eqwin_df,aes(x=startwins+0.0025,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6]) +scale_x_continuous(breaks=c(0,.005,.01,.015,.02,.025,.03,.035,.04,.045,.05),limits=c(0,.05)) + 
   ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
-  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
+  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8,alpha=0.5) +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
   geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
   scale_fill_discrete(name="sample size") + mytheme
@@ -247,8 +246,8 @@ ggplot(df, aes(x=origP, y=replicP)) +
 # Spearman's correlation excluding p<.0001 (as I suspect those may be driving most of the observed correlation of .3 above)
 raw_origP = RPPdata$T.pval.USE.O
 raw_replicP = RPPdata$T.pval.USE.R
-#length(origP)
-id = which(raw_origP > .0001 & raw_origP < 0.05)
+length(raw_origP)
+id = which(raw_origP >= .0001)# & raw_origP < 0.05)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 
