@@ -212,6 +212,7 @@ g + guides(color = F) + scale_size(name="sample size") +
   theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
            panel.grid.major.x=element_blank())
 dev.off()
+
 ```
 
 ```{r}
@@ -261,6 +262,42 @@ ggplot(df, aes(x=origP, y=replicP)) +
     geom_smooth(method=lm) +   # Add linear regression line 
                              #  (by default includes 95% confidence region)
     scale_x_continuous(breaks=c(0,.01,.05),limits=c(0,0.06)) 
+```
+
+```{r}
+# Windows of size .01 except for the first window (.005)
+length(origP)
+startwins = c(0,.005,.01, .02, .03, .04, .05)
+midwins = c(.0025,.0075,.015,.025,.035,.045)
+winProps <- 0
+Nsamp  <- 0
+i=0
+for (startw in head(startwins,-1)){
+  i=i+1
+  endw = startwins[i+1]
+  inds = origP>=startw & origP<endw
+  origPs = origP[inds]
+  replicPs = replicP[inds]
+  winProps[i] = sum(replicPs<0.05)/length(replicPs)
+  Nsamp[i] = length(replicPs)
+}
+props <- propCI(x = winProps*Nsamp, n = Nsamp) 
+jeffCIs = props[props$method=='jeffreys',c('lower','upper')]
+
+eqwin_df = data.frame(head(startwins,-1), winProps, Nsamp, jeffCIs)
+colnames(eqwin_df)[1] <- 'window start'
+colnames(eqwin_df)[2] <- 'proportion replicated'
+colnames(eqwin_df)[3] <- 'sample size'
+
+g <- ggplot(eqwin_df,aes(x=midwins,y=winProps))+ geom_point(aes(size=Nsamp)) +scale_x_continuous(breaks=c(0,.005,.01,.015,.02,.025,.03,.035,.04,.045,.05),limits=c(0,.05)) + 
+  ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
+  ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8,alpha=0.5) +
+  geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
+  geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
+  scale_fill_discrete(name="sample size") + mytheme
+g + guides(color = F) + scale_size(name="sample size") +
+  theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
+           panel.grid.major.x=element_blank())
 ```
 
 ```{r}
