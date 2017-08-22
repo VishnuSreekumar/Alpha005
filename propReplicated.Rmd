@@ -185,9 +185,9 @@ colnames(eqwin_df)[3] <- 'sample size'
 
 
 
-pdf("Figures/Fig2_propReplicated_eqwin005_step005.pdf",height=4,width=6)
+pdf("Figures/Fig2_propReplicated_eqwin005_step005.pdf",height=4,width=7)
 
-g <- ggplot(eqwin_df,aes(x=startwins+0.0025,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6]) +scale_x_continuous(breaks=c(0,.005,.01,.015,.02,.025,.03,.035,.04,.045,.05),limits=c(0,.05)) + 
+g <- ggplot(eqwin_df,aes(x=startwins+0.0025,y=winProps))+ geom_point(aes(size=Nsamp)) +scale_x_continuous(breaks=c(0,.005,.01,.015,.02,.025,.03,.035,.04,.045,.05),limits=c(0,.05)) + 
   ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
   ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8,alpha=0.5) +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
@@ -200,9 +200,9 @@ dev.off()
 
 #geom_line(size=1,alpha=0.5)
 
-png("Figures/Fig2_propReplicated_eqwin005_step005.png",height=4,width=6,units = "in",res=300)
+png("Figures/Fig2_propReplicated_eqwin005_step005.png",height=4,width=7,units = "in",res=600)
 
-g <- ggplot(eqwin_df,aes(x=startwins+0.0025,y=winProps))+ geom_point(aes(size=Nsamp),color = currentpalette[6]) +scale_x_continuous(breaks=c(0,.005,.01,.015,.02,.025,.03,.035,.04,.045,.05),limits=c(0,.05)) + 
+g <- ggplot(eqwin_df,aes(x=startwins+0.0025,y=winProps))+ geom_point(aes(size=Nsamp)) +scale_x_continuous(breaks=c(0,.005,.01,.015,.02,.025,.03,.035,.04,.045,.05),limits=c(0,.05)) + 
   ggtitle("") + xlab("Original study p-value") + ylab("Proportion of studies replicated") + 
   ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8,alpha=0.5) +
   geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
