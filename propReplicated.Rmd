@@ -64,7 +64,7 @@ id = which(raw_origP> 0.005 & raw_origP <= 0.05)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 1-sum(replicP<0.05)/length(origP) # failure rate at alpha .05
-1-sum(replicP<0.005)/length(origP) # failure rate at alpha .05
+1-sum(replicP<0.005)/length(origP) # failure rate at alpha .005
 X3 = sum(replicP<0.05)
 N3 = length(origP)
 X4 = sum(replicP<0.005)
@@ -75,7 +75,7 @@ id = which(raw_origP>= 0.001 & raw_origP < 0.005)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 1-sum(replicP<0.05)/length(origP) # failure rate at alpha .05
-1-sum(replicP<0.005)/length(origP) # failure rate at alpha .05
+1-sum(replicP<0.005)/length(origP) # failure rate at alpha .005
 X5 = sum(replicP<0.05)
 N5 = length(origP)
 X6 = sum(replicP<0.005)
@@ -86,7 +86,7 @@ id = which(raw_origP>= 0.0001 & raw_origP < 0.005)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 1-sum(replicP<0.05)/length(origP) # failure rate at alpha .05
-1-sum(replicP<0.005)/length(origP) # failure rate at alpha .05
+1-sum(replicP<0.005)/length(origP) # failure rate at alpha .005
 X7 = sum(replicP<0.05)
 N7 = length(origP)
 X8 = sum(replicP<0.005)
@@ -98,7 +98,7 @@ id = which(raw_origP< 0.0001)
 origP = raw_origP[id]
 replicP = raw_replicP[id]
 1-sum(replicP<0.05)/length(origP) # failure rate at alpha .05
-1-sum(replicP<0.005)/length(origP) # failure rate at alpha .05
+1-sum(replicP<0.005)/length(origP) # failure rate at alpha .005
 X9 = sum(replicP<0.05)
 N9 = length(origP)
 X10 = sum(replicP<0.005)
@@ -122,6 +122,21 @@ prop.test(c(X1,X3), c(N1,N3), correct=FALSE)
 prop.test(c(X2,X3), c(N2,N3), correct=FALSE) 
 
 
+```
+
+```{r}
+#.0001<p<=.005
+X7
+N7
+X7/N7
+
+#p<.0001
+X9
+N9
+X9/N9
+
+# Prop test for difference in p(corr) between .0001<=p<.005 and .005<p<=.05
+prop.test(c(X7,X3), c(N7,N3), correct=FALSE) 
 ```
 
 ```{r}
