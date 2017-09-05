@@ -604,4 +604,67 @@ replicP = raw_replicP[id]
 
 ```
 
+# Animation by window sizes
+```{r}
+plot_win <- function(winsize, stepsize) {
+  id = which(raw_origP < 0.05)
+  origP = raw_origP[id]
+  replicP = raw_replicP[id]
+  length(origP)
+  startwins = seq(0,0.05-winsize,by=stepsize)
+  winProps <- 0
+  Nsamp  <- 0
+  i=0
+  for (startw in startwins){
+    i=i+1
+    endw = startw + winsize
+    inds = origP>=startw & origP<endw
+    origPs = origP[inds]
+    replicPs = replicP[inds]
+    winProps[i] = sum(replicPs<0.05)/length(replicPs)
+    Nsamp[i] = length(replicPs)
+  }
+  
+  # 
+  # startwins = head(startwins,-1) # the last window has no data points and has NaN
+  # winProps = head(winProps,-1)
+  # Nsamp = head(Nsamp,-1)
+  props <- propCI(x = winProps*Nsamp, n = Nsamp) 
+  jeffCIs = props[props$method=='jeffreys',c('lower','upper')]
+  
+  eqwin_df = data.frame(startwins, winProps, Nsamp, jeffCIs)
+  colnames(eqwin_df)[1] <- 'window start'
+  colnames(eqwin_df)[2] <- 'proportion replicated'
+  colnames(eqwin_df)[3] <- 'sample size'
+  
+  
+  
+  g <- ggplot(eqwin_df,aes(x=startwins,y=winProps))+ 
+    geom_vline(aes(xintercept=0.05),linetype=2,color=mypalette[8]) + 
+    geom_vline(aes(xintercept=0.005),linetype=2,color=mypalette[8]) + 
+    geom_point(aes(size=Nsamp),color = currentpalette[6],alpha=.8) +
+    geom_line(size=1,alpha=0.5)+scale_x_continuous(breaks=c(0,.01,.02,.03,.04,.05),limits=c(0,.05)) + 
+    ggtitle("") + xlab(paste0("Original study p-value (window size:", winsize, ")" )) + ylab("Proportion of studies replicated") + 
+    ylim(c(0,1)) + geom_errorbar(aes(ymin=lower, ymax=upper), width=.5, size = .8) +
+    scale_fill_discrete(name="sample size") + mytheme
+  g + guides(color = F) + scale_size(name="sample size") +
+    theme(legend.position=c(.921, .5)) +  theme_bw(base_size = 12) + theme(panel.grid.minor.x=element_blank(),
+                                                                           panel.grid.major.x=element_blank())
+}
+
+
+library(magick)
+img <- image_graph(800, 200, res = 72)
+for (i in seq(.005, .010, .001)) {
+  p <- plot_win(winsize = i, stepsize = .001)  
+  print(p)
+}
+dontcare <- dev.off()
+animation <- image_animate(img, fps = 2)
+print(animation)
+
+image_write(animation, "Figures/Fig2-animated.gif")
+```
+
+
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
